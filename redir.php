@@ -1,0 +1,1 @@
+<?php header("Location: http://www.cubecart.com/r/1qazse4rfvgy7ujmko0-8b7265e4-code1"); ?>
