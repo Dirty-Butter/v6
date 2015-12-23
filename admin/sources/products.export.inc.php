@@ -21,7 +21,6 @@ global $lang;
 $seo  = SEO::getInstance();
 $catalogue = Catalogue::getInstance();
 
-$per_page = (isset($_GET['per_page'])) ? $_GET['per_page'] : 5000;
 $page = (isset($_GET['page'])) ? $_GET['page'] : 1;
 //$no_rows = $GLOBALS['db']->numrows('SELECT `product_id` FROM '.$GLOBALS['config']->get('config', 'dbprefix').'CubeCart_inventory');
 $no_rows = $GLOBALS['db']->numrows(sprintf('SELECT I.product_id FROM %1$sCubeCart_inventory AS I LEFT JOIN %1$sCubeCart_category AS C ON I.cat_id = C.cat_id WHERE I.status = 1', $GLOBALS['config']->get('config', 'dbprefix')));
@@ -41,9 +40,7 @@ foreach ($GLOBALS['hooks']->load('admin.product.export') as $hook) include $hook
 
 if (isset($_GET['format']) && !empty($_GET['format'])) {
 	if ($_GET['format'] == 'cubecart') {
-		$query = sprintf('SELECT I.* FROM %1$sCubeCart_inventory AS I INNER JOIN %1$sCubeCart_category_index AS R ON I.product_id = R.product_id LEFT JOIN %1$sCubeCart_category AS C ON R.cat_id = C.cat_id WHERE R.primary = 1 AND I.status = 1', $GLOBALS['config']->get('config', 'dbprefix'));
 	} else {
-		$query = sprintf('SELECT I.* FROM %1$sCubeCart_inventory AS I LEFT JOIN %1$sCubeCart_category AS C ON I.cat_id = C.cat_id WHERE I.status = 1', $GLOBALS['config']->get('config', 'dbprefix'));
 	}
 
 	if ($results = $GLOBALS['db']->query($query, $per_page, $page)) {
@@ -124,7 +121,6 @@ if (isset($_GET['format']) && !empty($_GET['format'])) {
 						$formatted_field[] = $result[$part_field];
 					}
 ##BSMITHER CHANGE TO LINE BELOW TO ADD HYPHEN TO BING EXPORT
-					$result[$field] = implode('  -  ', $formatted_field);
 				}
 				unset($formatted_field, $exploded_fields);
 
@@ -147,7 +143,6 @@ if (isset($feed_file_name) && !empty($feed_file_name)) {
 $fp = fopen($feed_file_name, "w");fwrite($fp, $output);fclose($fp);
 $GLOBALS['main']->setACPNotify("($filename) written");
 httpredir(currentPage(array('page','per_page','format','access')));
-} elseif(!isset($_GET['access'])) {
                 deliverFile(false, false, $output, $filename);
             } else {
                 echo $output;
@@ -193,7 +188,6 @@ $GLOBALS['smarty']->assign('LIMITS', $smarty_data['limits']);
 foreach ($formats as $format_key => $format_name) {
 	$format['name']  = $format_name;
 	$format['parts']  = download_parts($format_key, $no_rows, $per_page);
-	$format['link']  = $GLOBALS['storeURL'].'/'.$GLOBALS['config']->get('config', 'adminFile')."?_g=products&node=export&page=1&per_page=5000&format=$format_key&node=export&access=".$GLOBALS['config']->get('config', 'feed_access_key');
 	$smarty_data['formats'][] = $format;
 }
 $GLOBALS['smarty']->assign('FORMATS', $smarty_data['formats']);

@@ -72,8 +72,8 @@
          <form action="{$VAL_SELF}" method="post" class="panel add_to_basket">
             <div class="row product_list_view">
                <div class="small-3 columns">
-                  <a href="{$product.url}" title="{$product.name}">
-                  <img class="th" src="{$product.thumbnail}" alt="{$product.name}">
+                  <a href="{$product.url}" class="th" title="{$product.name}">
+                  <img src="{$product.thumbnail}" alt="{$product.name}">
                   </a>
                </div>
                <div class="small-6 columns center">
@@ -103,7 +103,7 @@
 				<span class= "regular_price">{$product.price}</span>
                      {/if}
                   </h3>
-                  {if $product.available == '0'}
+                  {if $product.available <= 0}
                   <div class="row collapse">
                      <div class="small-12 columns">
 <a href="{$product.url}" title="{$product.name}" class="button small postfix">{$LANG.catalogue.out_of_stock_short}</a>
@@ -202,10 +202,10 @@
          </dl>
       </div>
    </div>
-   {* Add "hide" class to hide more button ajax load *}
-   {if ($page < $total)}
+   {* Add "hide-for-small-up" to the class attribute to not display the more button *}
+   {if $page!=='all' && ($page < $total)}
    {$params[$var_name] = $page + 1}
-   <a href="{$current}{http_build_query($params)}{$anchor}" class="button tiny expand" id="ccScroll-next">{$LANG.common.more} <i class="fa fa-angle-down"></i></a>
+   <a href="{$current}{http_build_query($params)}{$anchor}" data-next-page="{$params[$var_name]}" class="button tiny expand" id="ccScroll-next">{$LANG.common.more} <i class="fa fa-angle-down"></i></a>
    {/if}
 </div>
 {if !empty($category.cat_desc)}

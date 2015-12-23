@@ -38,7 +38,7 @@ class SEO {
 	 */
 	// START SEMPERFI ASKABOUT ADDITION
 	// Old Code:
-	// private $_dynamic_sections	= array('prod', 'cat', 'doc');
+	private $_dynamic_sections = array('prod', 'cat', 'doc');
 	// New Code:
 	private $_dynamic_sections	= array('prod', 'cat', 'doc', 'askabout');
 	//END SEMPERFI ADDITION 
@@ -54,7 +54,7 @@ class SEO {
 	 * @var array of strings
 	 */
 	private $_ignored   = array(
-		'account', 'addressbook', 'basket', 'checkout', 'complete', 'confirm', 'downloads', 'gateway', 'logout', 'profile', 'recover', 'recovery', 'remote', 'vieworder', 'plugin'
+		'account', 'addressbook', 'basket', 'checkout', 'complete', 'confirm', 'downloads', 'gateway', 'logout', 'profile', 'receipt', 'recover', 'recovery', 'remote', 'vieworder', 'plugin', 'unsubscribe'
 	);
 	/**
 	 * Rewrite URL Absolute?
@@ -728,9 +728,9 @@ if( $GLOBALS['config']->has('config', 'robots_path') && file_exists($GLOBALS['co
 
 		$this->_sitemap_link(array('url' => $store_url.'/index.php'));
 		# Sale Items
-		//if ($GLOBALS['config']->get('config', 'catalogue_sale_mode')!=='0') {
-		//	$this->_sitemap_link(array('url' => $store_url.'/index.php?_a=saleitems'));
-		//}
+		if ($GLOBALS['config']->get('config', 'catalogue_sale_mode')!=='0') {
+			$this->_sitemap_link(array('url' => $store_url.'/index.php?_a=saleitems'));
+		}
 		# Gift Certificates
 		if ($GLOBALS['config']->get('gift_certs','status')=='1') {
 			$this->_sitemap_link(array('url' => $store_url.'/index.php?_a=certificates'));
@@ -772,11 +772,11 @@ if( $GLOBALS['config']->has('config', 'robots_path') && file_exists($GLOBALS['co
 		$sitemap = $this->_sitemap_xml->getDocument(true);
 
 //  I REMOVED THE FOLLOWING TO GET RID OF GZP FILE I DID NOT NEED
-		//if (function_exists('gzencode')) {
+		if (function_exists('gzencode')) {
 			// Compress the file if GZip is enabled
-		//	$filename	= CC_ROOT_DIR.CC_DS.'sitemap.xml.gz';
-	//		$mapdata	= gzencode($sitemap, 9, FORCE_GZIP);
-	//	} else {
+			$filename = CC_ROOT_DIR.'/sitemap.xml.gz';
+			$mapdata = gzencode($sitemap, 9, FORCE_GZIP);
+		} else {
 // END MY REMOVE - BRACE BELOW IS NEEDED FROM LINE 747
 {
 			$filename = CC_ROOT_DIR.'/sitemap.xml';

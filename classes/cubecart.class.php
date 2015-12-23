@@ -488,6 +488,8 @@ class Cubecart {
 
 		$_a = isset($_GET['redir']) ? $_GET['redir'] : 'addressbook';
 
+		$GLOBALS['smarty']->assign('REDIR', $_a);
+
 		if (isset($_POST['save'])) {
 			if (empty($_POST['description'])) {
 				if($_POST['billing']==1 && $_POST['default']==1) {
@@ -716,11 +718,12 @@ class Cubecart {
 			$gatway_proceed = (($_GET['_a']=='confirm' || $_GET['_a']=='checkout') && isset($_POST['proceed'])) ? true : false;
 
 			// Check shipping has been defined for tangible orders
-			if (!isset($this->_basket['digital_only'])) {
-				if (!isset($this->_basket['shipping'])) {
+			if (!isset($this->_basket['digital_only']) && !isset($this->_basket['shipping'])) {
+				$de = $GLOBALS['config']->get('config', 'disable_estimates');
+				if(($de == '1' && $this->_basket['delivery_address']['user_defined']) || ($de == '0' || !$de)) {
 					$GLOBALS['gui']->setError($GLOBALS['language']->checkout['error_shipping']);
-					$gatway_proceed = false;
 				}
+				$gatway_proceed = false;
 			}
 
 			// Check billing address is user defined
@@ -815,7 +818,7 @@ class Cubecart {
 		if (isset($_REQUEST['search']) && is_array($_REQUEST['search'])) {
 			if (!$GLOBALS['catalogue']->searchCatalogue($_REQUEST['search'], $page, $catalogue_products_per_page)) {
 // ORIGINAL NOT FOUND SEARCH RESULTS REPLACED WITH "FOUND" CODE SO SEARCH ATTEMPT SHOWS FOR CUSTOMER
-				//$GLOBALS['catalogue']->setCategory('cat_name', $GLOBALS['language']->navigation['search_results']);
+				$GLOBALS['catalogue']->setCategory('cat_name', $GLOBALS['language']->navigation['search_results']);
 $GLOBALS['catalogue']->setCategory('cat_name', sprintf($GLOBALS['language']->catalogue['notify_product_search'],$_REQUEST['search']['keywords']));
 				$GLOBALS['gui']->addBreadcrumb($GLOBALS['language']->common['search'], 'index.php?_a=search');
 				$GLOBALS['gui']->addBreadcrumb($GLOBALS['language']->navigation['search_results'], currentPage());
@@ -1138,13 +1141,13 @@ END MODSINDEX RECAPTCHA MOD*/
 			if (($countries = $GLOBALS['db']->select('CubeCart_geo_country', array('numcode', 'name'), array('status' => 1), array('name' => 'ASC'))) !== false) {
 				foreach ($countries as $country) {
 					$country['selected'] = '';
-					if (isset($this->_basket['billing_address'])) {
+					if (isset($this->_basket['billing_address']['country_id']) && !empty($this->_basket['billing_address']['country_id']) ) {
 						if ($country['numcode'] == $this->_basket['billing_address']['country_id']) $country['selected'] = 'selected="selected"';
 					} else {
 						if ($country['numcode'] == $GLOBALS['config']->get('config', 'store_country')) $country['selected'] = 'selected="selected"';
 					}
 					$country['selected_d'] = '';
-					if (isset($this->_basket['delivery_address'])) {
+					if (isset($this->_basket['delivery_address']['country_id']) && !empty($this->_basket['delivery_address']['country_id'])) {
 						if ($country['numcode'] == $this->_basket['delivery_address']['country_id']) $country['selected_d'] = 'selected="selected"';
 					} else {
 						if ($country['numcode'] == $GLOBALS['config']->get('config', 'store_country')) $country['selected_d'] = 'selected="selected"';
@@ -1928,6 +1931,32 @@ END MODSINDEX RECAPTCHA MOD*/
 			}
 			$GLOBALS['smarty']->assign('ITEMS', array_reverse($items, true));
 
+			// Get basket total
+			if (isset($this->_basket['coupons']) && is_array($this->_basket['coupons']) || !empty($this->_basket['discount'])) {
+				if (!empty($this->_basket['discount']) && $this->_basket['discount']>0) {
+					$GLOBALS['smarty']->assign('DISCOUNT', $GLOBALS['tax']->priceFormat($this->_basket['discount']));
+				}
+
+				if (is_array($this->_basket['coupons'])) {
+					foreach ($this->_basket['coupons'] as $coupon) {
+						$coupon['remove_code'] = $coupon['voucher'];
+						if ($coupon['type'] == 'fixed') {
+							$this->_basket['discount_type'] = 'f';
+							$coupon['value'] = $GLOBALS['tax']->priceFormat($coupon['value_display'], true);
+							$coupons[] = $coupon;
+						} else if ($coupon['type'] == 'percent') {
+								$this->_basket['discount_type'] = $coupon['products'] ? 'pp' : 'p';
+								$coupon['voucher'] .= ' ('.$coupon['value'].'%)';
+								$coupon['value'] = $GLOBALS['tax']->priceFormat($coupon['value_display'], true);
+								$coupons[] = $coupon;
+							}
+					}
+					$GLOBALS['smarty']->assign('COUPONS', $coupons);
+				}
+			}
+
+			foreach ($GLOBALS['hooks']->load('class.cubecart.post_coupon') as $hook) include $hook;
+
 			// Shipping Calculations
 			if (($shipping = $GLOBALS['cart']->loadShippingModules()) !== false) {
 				$offset = 1;
@@ -2007,6 +2036,8 @@ END MODSINDEX RECAPTCHA MOD*/
 				$shipping_list = false;
 			}
 
+			foreach ($GLOBALS['hooks']->load('class.cubecart.post_shipping') as $hook) include $hook;
+
 			// Check if new shipping methods are avialble and notify if they are
 			$shipping_hash = md5(serialize($shipping_list));
 			if (isset($GLOBALS['cart']->basket['shipping_hash']) && !empty($GLOBALS['cart']->basket['shipping_hash']) && $shipping_hash!==$GLOBALS['cart']->basket['shipping_hash']) {
@@ -2022,29 +2053,7 @@ END MODSINDEX RECAPTCHA MOD*/
 			if (!$digital_only && $shipping) {
 				$GLOBALS['smarty']->assign('SHIPPING', $shipping_list);
 			}
-			// Get basket total
-			if (isset($this->_basket['coupons']) && is_array($this->_basket['coupons']) || !empty($this->_basket['discount'])) {
-				if (!empty($this->_basket['discount']) && $this->_basket['discount']>0) {
-					$GLOBALS['smarty']->assign('DISCOUNT', $GLOBALS['tax']->priceFormat($this->_basket['discount']));
-				}
-
-				if (is_array($this->_basket['coupons'])) {
-					foreach ($this->_basket['coupons'] as $coupon) {
-						$coupon['remove_code'] = $coupon['voucher'];
-						if ($coupon['type'] == 'fixed') {
-							$this->_basket['discount_type'] = 'f';
-							$coupon['value'] = $GLOBALS['tax']->priceFormat($coupon['value_display'], true);
-							$coupons[] = $coupon;
-						} else if ($coupon['type'] == 'percent') {
-								$this->_basket['discount_type'] = $coupon['products'] ? 'pp' : 'p';
-								$coupon['voucher'] .= ' ('.$coupon['value'].'%)';
-								$coupon['value'] = $GLOBALS['tax']->priceFormat($coupon['value_display'], true);
-								$coupons[] = $coupon;
-							}
-					}
-					$GLOBALS['smarty']->assign('COUPONS', $coupons);
-				}
-			}
+			
 			$GLOBALS['smarty']->assign('SUBTOTAL', $GLOBALS['tax']->priceFormat($GLOBALS['cart']->getSubTotal()));
 
 			$GLOBALS['tax']->displayTaxes();
@@ -2523,11 +2532,13 @@ END MODSINDEX RECAPTCHA MOD*/
 			if (isset($_POST['subscribe'])) {
 				if ($newsletter->subscribe($_POST['subscribe'])) {
 					$GLOBALS['gui']->setNotify($GLOBALS['language']->newsletter['notify_subscribed']);
+					httpredir('?_a=unsubscribe');
 				} else if ($GLOBALS['user']->is()) {
 						$GLOBALS['gui']->setError($GLOBALS['language']->common['error_email_invalid']);
 					} else {
 					if ($newsletter->unsubscribe($_POST['subscribe'])) {
 						$GLOBALS['gui']->setNotify($GLOBALS['language']->newsletter['notify_unsubscribed']);
+						httpredir('?_a=newsletter');
 					} else {
 						$GLOBALS['gui']->setError($GLOBALS['language']->common['error_email_invalid']);
 					}
@@ -2535,10 +2546,10 @@ END MODSINDEX RECAPTCHA MOD*/
 				httpredir(currentPage());
 			}
 
-			if (isset($_GET['unsubscribe']) && filter_var($_GET['unsubscribe'], FILTER_VALIDATE_EMAIL)) {
-				if ($newsletter->unsubscribe($_GET['unsubscribe'])) {
+			if (isset($_REQUEST['unsubscribe']) && filter_var($_REQUEST['unsubscribe'], FILTER_VALIDATE_EMAIL)) {
+				if ($newsletter->unsubscribe($_REQUEST['unsubscribe'])) {
 					$GLOBALS['gui']->setNotify($GLOBALS['language']->newsletter['notify_unsubscribed']);
-					httpredir(currentPage(array('unsubscribe')));
+					httpredir('?_a=newsletter');
 				}
 			}
 			if (isset($_GET['verify'])) {
@@ -2589,7 +2600,18 @@ END MODSINDEX RECAPTCHA MOD*/
 			}
 		}
 		$content = $GLOBALS['smarty']->fetch('templates/content.newsletter.php');
+		if($_GET['_a'] == 'unsubscribe') {
+			$form_id 	= 'newsletter_form_unsubscribe';
+			$mode 		= 'unsubscribe';
+		} else {
+			$form_id 	= 'newsletter_form';
+			$mode 		= 'subscribe';
+		}
+		$GLOBALS['smarty']->assign('FORM_ID', $form_id);
+		$GLOBALS['smarty']->assign('SUBSCRIBE_MODE', $mode);
+		$GLOBALS['smarty']->assign('DISABLE_BOX_NEWSLETTER', true);
 		$GLOBALS['smarty']->assign('SECTION_NAME', 'account');
+		$content = $GLOBALS['smarty']->fetch('templates/content.newsletter.php');
 		$GLOBALS['smarty']->assign('PAGE_CONTENT', $content);
 	}
 
@@ -2602,7 +2624,7 @@ END MODSINDEX RECAPTCHA MOD*/
 		if ($GLOBALS['user']->is()) {
 			$GLOBALS['gui']->addBreadcrumb($GLOBALS['language']->account['your_account'], 'index.php?_a=account');
 			$GLOBALS['gui']->addBreadcrumb($GLOBALS['language']->account['your_orders'], currentPage(array('cart_order_id'), null, false));
-		//	6.0.8 VERSION if (isset($_GET['cart_order_id']) && Order::validOrderId(trim($_GET['cart_order_id']))) {
+			if (isset($_GET['cart_order_id']) && Order::validOrderId(trim($_GET['cart_order_id']))) {
 	 	//ORIGINAL 6.0.7	if (isset($_GET['cart_order_id']) && preg_match('#^[0-9]{6}-[0-9]{6}-[0-9]{4}$#i', trim($_GET['cart_order_id']))) {
 		//Sequential Order Number tweak for Lookup Order
    if (isset($_GET['cart_order_id'])){
@@ -2696,7 +2718,7 @@ END MODSINDEX RECAPTCHA MOD*/
 					httpredir(currentPage(array('cart_order_id')));
 				}
 			} else {
-	//6.0.8 version			if (isset($_GET['cancel']) && Order::validOrderId(trim($_GET['cancel']))) {
+				if (isset($_GET['cancel']) && Order::validOrderId(trim($_GET['cancel']))) {
 	//SEQUENTIAL ORDER VERSION
 	if (isset($_GET['cancel'])) {
 	// END SEQUENTIAL VERSION			
@@ -2712,7 +2734,7 @@ END MODSINDEX RECAPTCHA MOD*/
 						$GLOBALS['gui']->setError($GLOBALS['language']->orders['notify_order_cancelled']);
 					}
 					httpredir(currentPage(array('cancel')));
-	// 608 VERSION			} else if(isset($_GET['reorder']) && Order::validOrderId(trim($_GET['reorder']))) {
+				} else if(isset($_GET['reorder']) && Order::validOrderId(trim($_GET['reorder']))) {
 	// SEQUENTIAL VERSION
 		} else if(isset($_GET['reorder'])) {
 		// END SEQUENTIAL VERSION
@@ -2812,7 +2834,7 @@ END MODSINDEX RECAPTCHA MOD*/
 				}
 			} else {
 				// Display a search page
-			// 608 VERSION	$cart_oder_id = Order::validOrderId(trim($_GET['cart_order_id'])) ? trim($_GET['cart_order_id']) : '';
+				$cart_oder_id = Order::validOrderId(trim($_GET['cart_order_id'])) ? trim($_GET['cart_order_id']) : '';
 			//SEQUENTIAL VERSION ??
 			$cart_oder_id = preg_match('#^[0-9]{6}-[0-9]{6}-[0-9]{4}$#i', trim($_GET['cart_order_id'])) ? trim($_GET['cart_order_id']) : '';
 			// END SEQUENTIAL

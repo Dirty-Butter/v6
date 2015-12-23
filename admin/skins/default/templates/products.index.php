@@ -176,7 +176,7 @@
          <div><label for="condition">{$LANG.catalogue.condition}</label>
             <span>
             <select name="condition" id="condition" class="textbox" type="text">
-<!--swapped used, so it shows up first-->
+            <option value="new" {if $PRODUCT.condition == 'new'}selected="selected"{/if}>{$LANG.catalogue.condition_new}</option>
 				<option value="used" {if $PRODUCT.condition == 'used'}selected="selected"{/if}>{$LANG.catalogue.condition_used}</option>
 	  			<option value="new" {if $PRODUCT.condition == 'new'}selected="selected"{/if}>{$LANG.catalogue.condition_new}</option>
 				<option value="refurbished" {if $PRODUCT.condition == 'refurbished'}selected="selected"{/if}>{$LANG.catalogue.condition_refurbished}</option>
@@ -266,7 +266,7 @@ Catalog Listing for <a href="{$STORE_URL}/index.php?search[keywords]={$PRODUCT.p
                   {if isset($TAXES)}
                   <select name="tax_type" id="tax_type" class="textbox">
                    	<!-- MY STANDARD TAX SHOWS	-->
-<!-- <option value="">{$LANG.common.please_select} &hellip;</option> REMOVED SO STANDARD TAX SHOWS BY DEFAULT-->		
+                     <option value="">{$LANG.common.please_select} &hellip;</option>
 <!-- END MY STANDARD TAX -->
 
                      {foreach from=$TAXES item=tax}<option value="{$tax.id}"{$tax.selected}>{$tax.tax_name}</option>{/foreach}

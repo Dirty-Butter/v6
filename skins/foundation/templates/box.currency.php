@@ -19,7 +19,7 @@
       {/if}
       {/foreach}
    </ul>
-  {else}
+   {else}
    	<span class="button white small">{$CURRENT_CURRENCY.symbol_left|escape:'htmlall'} {$CURRENT_CURRENCY.code} {$CURRENT_CURRENCY.symbol_right|escape:'htmlall'}</span>
    {/if}
 </div>

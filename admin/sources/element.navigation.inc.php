@@ -1,5 +1,4 @@
 <?php
-/**  PLUSH
  * CubeCart v6
  * ========================================
  * CubeCart is a registered trade mark of CubeCart Limited

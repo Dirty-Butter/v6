@@ -188,6 +188,9 @@ class User {
 	 */
 	public function authenticate($username, $password, $remember = false, $from_cookie = false, $is_openid = false, $redirect = true) {
 
+		$username = (string)$username;
+		$password = (string)$password;
+
 		//Check we are not upgrading an unregistered account
 		if($unregistered = $GLOBALS['db']->select('CubeCart_customer', array('customer_id'), array('type' => 2, 'email' => $username, 'status' => true))) {
 			$record = array(
@@ -423,11 +426,19 @@ class User {
 	public function formatAddress($address = array(), $user_defined = true, $estimate = false) {
 		
 		if(!$user_defined && !is_array($address)) {
-			$address = array(
-				'postcode' => $GLOBALS['config']->get('config', 'store_postcode'),
-				'country' => $GLOBALS['config']->get('config', 'store_country'),
-				'state' => $GLOBALS['config']->get('config', 'store_zone')
-			);
+			if($GLOBALS['config']->get('config', 'disable_estimates')=='1') {
+				$address = array(
+					'postcode' => '',
+					'country' => '',
+					'state' => ''
+				);
+			} else {
+				$address = array(
+					'postcode' => $GLOBALS['config']->get('config', 'store_postcode'),
+					'country' => $GLOBALS['config']->get('config', 'store_country'),
+					'state' => $GLOBALS['config']->get('config', 'store_zone')
+				);
+			}
 		}
 
 		$state_field = is_numeric($address['state']) ? 'id' : 'name';
@@ -537,6 +548,21 @@ class User {
 		} else {
 			return $this->_user_data['customer_id'];
 		}
+	}
+
+	/**
+	 * Get customer group memberships
+	 * @param int $customer_id
+	 * @return false/array
+	 */
+	public function getMemberships($customer_id = null) {
+		if(is_null($customer_id)) {
+			$customer_id = $this->getId();
+		}
+		if($customer_id>0) {
+			return $GLOBALS['db']->select('CubeCart_customer_membership', false, array('customer_id' => $customer_id));
+		}
+		return false;
 	}
 
 	/**

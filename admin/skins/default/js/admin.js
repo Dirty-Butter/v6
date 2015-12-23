@@ -170,9 +170,17 @@ function productOptionPrices(t) {
     }), e.val(i.toFixed(2)), $(".update-subtotal input.number").trigger("change"), !1
 }
 $(document).ready(function() {
+<<<<<<< HEAD
     setTimeout(function() {
         window.scrollTo(0, 0)
     }, 1);
+=======
+
+    setTimeout(function() {
+        window.scrollTo(-81, 0)
+    }, 1);
+
+>>>>>>> b2e112ed51a8ea71dca37c2960f891da016f3bb1
     var t = !1;
     if (jQuery.debug = function(t) {
             window.console ? console.debug("CubeCart: " + t) : alert(t)
@@ -493,6 +501,7 @@ $(document).ready(function() {
                 a = i.split("#");
             $("#wikihelp").attr("href", a[0] + e)
         }
+<<<<<<< HEAD
         $("#previous-tab").val(e), $("input.previous-tab").val(e), window.scrollTo(0, 0)
     }).on("click", function() {
         var t = $(this).children("a").attr("href"),
@@ -500,6 +509,15 @@ $(document).ready(function() {
         if ($("#navigation").height() < e && $("#page_content").height(e + 100), "#sidebar" == t) return $("#sidebar_control").click(), !1;
         if (t.match(/^#/)) {
             if (document.location.hash = t, $(".tab").removeClass("tab-selected"), $(this).addClass("tab-selected"), $("div.tab_content").hide(), $(t).show(), window.scrollTo(0, 0), $("#previous-tab").val(t), $("input.previous-tab").val(t), $("#wikihelp").exists()) {
+=======
+        $("#previous-tab").val(e), $("input.previous-tab").val(e), window.scrollTo(-81, 0)
+    }).on("click", function() {
+        var t = $(this).children("a").attr("href"),
+            e = $(t).height();
+        if ($("#navigation").height() < e && $("#page_content").css('min-height',e + 100 +'px'), "#sidebar" == t) return $("#sidebar_control").click(), !1;
+        if (t.match(/^#/)) {
+            if (document.location.hash = t, $(".tab").removeClass("tab-selected"), $(this).addClass("tab-selected"), $("div.tab_content").hide(), $(t).show(), window.scrollTo(-81, 0), $("#previous-tab").val(t), $("input.previous-tab").val(t), $("#wikihelp").exists()) {
+>>>>>>> b2e112ed51a8ea71dca37c2960f891da016f3bb1
                 var i = $("#wikihelp").attr("href"),
                     a = i.split("#");
                 $("#wikihelp").attr("href", a[0] + t)
@@ -618,7 +636,11 @@ $(document).ready(function() {
     }), $("input.date").datepicker(), window.scrollTo(0, 0);
     var s = $("#navigation").height(),
         r = $("#page_content").height();
+<<<<<<< HEAD
     s > r && $("#page_content").height(s + 100), $('input[type="checkbox"]').each(function() {
+=======
+    s > r && $("#page_content").css('min-height',s + 100 +'px'), $('input[type="checkbox"]').each(function() {
+>>>>>>> b2e112ed51a8ea71dca37c2960f891da016f3bb1
         $(this).parent().hasClass("custom-checkbox") || $(this).wrap("<div class='custom-checkbox'></div>"), $(this).is(":checked") ? $(this).parent().addClass("selected") : $(this).parent().removeClass("selected")
     }), $("body").on("click", "img.checkbox, .check-primary, .check_cat, .check-all, .custom-checkbox", function() {
         $('input[type="checkbox"]').each(function() {

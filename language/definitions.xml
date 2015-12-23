@@ -314,7 +314,7 @@
     <string name="error_no_stock_available" introduced="5.2.0"><![CDATA[Sorry but that product is out of stock.]]></string>
     <string name="error_no_stock_available_options" introduced="5.2.0"><![CDATA[Sorry but the chosen product option combination is out of stock.]]></string>
     <string name="error_option_attrib_create" introduced="5.0.0"><![CDATA[Failed to create attribute.]]></string>
-    <string name="error_option_attrib_create_parent" introduced="5.0.0"><![CDATA[Unabble to create attribute, as no parent was selected.]]></string>
+    <string name="error_option_attrib_create_parent" introduced="5.0.0"><![CDATA[Unable to create attribute, as no parent was selected.]]></string>
     <string name="error_option_attrib_delete" introduced="5.0.0"><![CDATA[Failed to delete attribute.]]></string>
     <string name="error_option_group_attrib_added" introduced="5.0.0"><![CDATA[Unable to add attribute.]]></string>
     <string name="error_option_group_attrib_delete" introduced="5.0.0"><![CDATA[Selected attribute(s) have not been removed from set.]]></string>
@@ -344,6 +344,7 @@
     <string name="image_included" introduced="5.0.0"><![CDATA[Included Image]]></string>
     <string name="image_main" introduced="5.0.0"><![CDATA[Main Image]]></string>
     <string name="image_comma" introduced="6.0.0"><![CDATA[Images (Comma Separated)]]></string>
+    <string name="import_disclaimer" introduced="6.0.9"><![CDATA[Important: This tool has <u>not</u> been designed to manage existing inventory. Please use it to import new products only.]]></string>
     <string name="import_column_ignore" introduced="5.0.0"><![CDATA[-- Ignore --]]></string>
     <string name="import_csv_headers" introduced="5.0.0"><![CDATA[CSV has column headers]]></string>
     <string name="import_format" introduced="5.0.0"><![CDATA[Format]]></string>
@@ -950,7 +951,7 @@
     <string name="notify_customer_update" introduced="5.0.0"><![CDATA[Customer successfully updated.]]></string>
     <string name="notify_groups_create" introduced="5.0.0"><![CDATA[Customer group added.]]></string>
     <string name="notify_groups_delete" introduced="5.0.0"><![CDATA[Customer groups deleted.]]></string>
-    <string name="notify_groups_update" introduced="5.0.0"><![CDATA[]]></string>
+    <string name="notify_groups_update" introduced="5.0.0"><![CDATA[Customer groups updated.]]></string>
     <string name="order_count" introduced="5.0.0"><![CDATA[Orders]]></string>
     <string name="order_count_single" introduced="5.0.0"><![CDATA[Order]]></string>
     <string name="title_address" introduced="5.0.0"><![CDATA[Addresses]]></string>
@@ -1312,6 +1313,7 @@
     <string name="with_selected" introduced="5.0.0"><![CDATA[-- With Selected --]]></string>
   </group>
   <group name="gateway">
+    <string name="none_defined" introduced="6.0.9"><![CDATA[No payment methods have been defined. Please contact the merchant for assistance.]]></string>
     <string name="amount_due" introduced="5.0.0"><![CDATA[Amount Due]]></string>
     <string name="bank_account_name" introduced="5.0.0"><![CDATA[Account Name]]></string>
     <string name="bank_account_no" introduced="5.0.0"><![CDATA[Account Number]]></string>
@@ -1392,6 +1394,7 @@
     <string name="example_code_snippet_xml" introduced="5.2.0"><![CDATA[An example of an import XML feed can be found <a href="docs/examples/code_snippet_import.xml">here</a>. Please use the &quot;Help&quot; link for further information.]]></string>
   </group>
   <group name="maintain">
+    <string name="latest_version_unknown" introduced="6.0.9"><![CDATA[Failed to look up latest version.]]></string>
     <string name="upgrade_history" introduced="6.0.7"><![CDATA[Upgrade History]]></string>
     <string name="truncate_seo_custom" introduced="6.0.0"><![CDATA[Clear all custom defined SEO URL's]]></string>
     <string name="truncate_seo_auto" introduced="6.0.0"><![CDATA[Clear all auto generated SEO URL's]]></string>
@@ -1838,6 +1841,7 @@
     <string name="title_search_products" introduced="5.0.0"><![CDATA[Search Products]]></string>
   </group>
   <group name="settings">
+    <string name="disable_estimates" introduced="6.0.9"><![CDATA[Disable initial shipping &amp; tax estimates]]></string>
     <string name="social_accounts" introduced="6.0.0"><![CDATA[Social Account (Username or URL)]]></string>
     <string name="seo_add_cats" introduced="6.0.0"><![CDATA[Add category to product URL path?]]></string>
     <string name="seo_add_cats_top" introduced="6.0.0"><![CDATA[Top level category only]]></string>

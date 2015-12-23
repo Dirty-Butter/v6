@@ -195,7 +195,7 @@ class Admin {
 	public function passwordRequest($username, $email) {
 		if (!empty($username) && !empty($email) && filter_var($email, FILTER_VALIDATE_EMAIL)) {
 			if (($check = $GLOBALS['db']->select('CubeCart_admin_users', array('admin_id', 'email', 'language', 'name'), array('username' => $username, 'email' => $email, 'status' => '1'))) !== false) {
-				// Generate validation key
+				//Â Generate validation key
 				$validation = randomString($this->_validate_key_len);
 				if ($GLOBALS['db']->update('CubeCart_admin_users', array('verify' => $validation), array('admin_id' => (int)$check[0]['admin_id']))) {
 					// Send email
@@ -244,7 +244,7 @@ class Admin {
 			foreach ($departments as $section_id) {
 				// Do they have permission to be here?
 				if (isset($this->_permissions[$section_id])) {
-					// Check Section specific permissions
+					//Â Check Section specific permissions
 					if ($this->_permissions[$section_id] & $level) {
 						$allowed = true;
 						continue;
@@ -294,7 +294,11 @@ class Admin {
 	 * @return bool
 	 */
 	private function _authenticate($username, $password) {
+		
+		$username = (string)$username;
+		$password = (string)$password;
 		$hash_password = '';
+
 		if (!empty($username)) {
 			// Fetch salt
 			if (($user = $GLOBALS['db']->select('CubeCart_admin_users', array('admin_id', 'password', 'salt', 'new_password'), array('username' => $username, 'status' => '1'), null, 1)) !== false) {
@@ -524,7 +528,7 @@ class Admin {
 				$this->_logged_in = true;
 				$this->_admin_data = $data;
 				$GLOBALS['session']->set('user_language', (!empty($data['language'])) ? $data['language'] : $GLOBALS['config']->get('config', 'default_language'), 'admin');
-				// Load Permission Rules
+				//Â Load Permission Rules
 				if (($permissions = $GLOBALS['db']->select('CubeCart_permissions', false, array('admin_id' => $this->_admin_data['admin_id']))) !== false) {
 					foreach ($permissions as $permission) {
 						$this->_permissions[$permission['section_id']] = $permission['level'];

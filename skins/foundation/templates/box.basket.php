@@ -14,7 +14,7 @@
    <div class="show-for-medium-up">
       <div class="text-right"><a href="#" id="basket-summary" class="button white small"><i class="fa fa-shopping-cart"></i> {$CART_TOTAL}</a></div>
       <div class="basket-detail-container hide" id="basket-detail">
-          <div class="mini-basket-arrow"></div> 
+         <div class="mini-basket-arrow"></div>
          {include file='templates/box.basket.content.php'} 
       </div>
    </div>

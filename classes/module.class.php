@@ -396,7 +396,7 @@ class Module {
 	 * @return bool
 	 */
 	private function _module_classes() {
-		// Include all classes for the module
+		//Â Include all classes for the module
 		if (is_dir($this->_path.'/'.'classes')) {
 			foreach (glob($this->_path.'/'.'classes'.DIRECTORY_SEPARATOR.'*.inc.php', GLOB_NOSORT) as $include) {
 				if (!is_dir($include)) {
@@ -417,7 +417,7 @@ class Module {
 	private function _module_data($path = false, $local_name = false) {
 		// Set Module Path
 		if ($path) {
-			$drop = array('/admin', '/classes', '/skin', '/language');
+			$drop = array( CC_DS.'admin',  CC_DS.'classes',  CC_DS.'skin',  CC_DS.'language');
 			$this->_path = CC_ROOT_DIR.str_replace($drop, '', dirname(str_replace(CC_ROOT_DIR, '', $path)));
 			// Drop trailing slashes
 			if (substr($this->_path, -1) == '/') {
@@ -427,7 +427,7 @@ class Module {
 		// Load package configuration data
 		if (file_exists($this->_path.'/'.$this->_package_xml)) {
 			$xml = new SimpleXMLElement(file_get_contents($this->_path.'/'.$this->_package_xml, true));
-			## Parse and handle XML data
+			##Â Parse and handle XML data
 			foreach ((array)$xml->info as $key => $value) {
 				$this->_info[$key] = (string)$value;
 			}

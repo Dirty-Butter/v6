@@ -958,7 +958,7 @@ if ($this->_email_enabled && ($contents = $mailer->loadContent('cart.digital_dow
 			return $this->_order_inventory;
 		} else {
 			if (!is_null($order_id)) {
-					//	if (($products = $GLOBALS['db']->select('CubeCart_order_inventory', false, array('cart_order_id' => $order_id))) !== false) {
+				if (($products = $GLOBALS['db']->select('CubeCart_order_inventory', false, array('cart_order_id' => $order_id))) !== false) {
 				//BSMITHER'S version of line above for adding review link to email
 if (($products = $GLOBALS['db']->misc(sprintf("SELECT %1\$sCubeCart_order_inventory.*,path FROM `%1\$sCubeCart_order_inventory` LEFT JOIN `%1\$sCubeCart_seo_urls` ON `product_id` = `item_id` WHERE `cart_order_id` = " . $GLOBALS['db']->sqlSafe($order_id, true) . " AND `type` = 'prod' ",$GLOBALS['config']->get('config','dbprefix')), false)) !== false) {
 					$this->_order_inventory = $products;
@@ -1018,8 +1018,8 @@ if (($products = $GLOBALS['db']->misc(sprintf("SELECT %1\$sCubeCart_order_invent
 						}
 						break;
 					case self::ORDER_DECLINED:
-					//case self::ORDER_FAILED: NEW CODE IS SEVERAL LINES DOWN FROM HERE
-					//	break;
+					case self::ORDER_FAILED:
+						break;
 					case self::ORDER_CANCELLED:
 						## Restore stock
 						if ($item['stock_updated']) {
@@ -1243,6 +1243,7 @@ if (($products = $GLOBALS['db']->misc(sprintf("SELECT %1\$sCubeCart_order_invent
 			'total'   => $this->_basket['total'],
 			## Shipping
 			'ship_method' => $this->_basket['shipping']['name'],
+			'weight' => $this->_basket['weight'],
 			'ship_product' => $this->_basket['shipping']['product'],
 			'shipping'  => ($this->_basket['shipping']['value']>0) ? $this->_basket['shipping']['value'] : '0.00',
 			# Misc
